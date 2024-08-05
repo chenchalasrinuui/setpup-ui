@@ -14,7 +14,7 @@ export const Register = () => {
 
     const handleRegister = () => {
         const { loc, name, email, phone } = dataObj;
-        axios.post(`http://localhost:2020/users/register/${loc}?name=${name}`, { email }, {
+        axios.post(`https://stepup-server-snowy.vercel.app/users/register/${loc}?name=${name}`, { email }, {
             headers: {
                 phone
             }
