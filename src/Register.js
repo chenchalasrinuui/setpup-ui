@@ -1,28 +1,35 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import axios from 'axios'
 
 export const Register = () => {
-    const dataObj = useRef({})
+    const [dataObj, setDataObj] = useState({ name: '', loc: "", email: '', phone: '' })
     const handleChange = (eve) => {
         const { id, value } = eve.target
-        dataObj.current = {
-            ...dataObj.current,
+        setDataObj({
+            ...dataObj,
             [id]: value
-        }
+        })
+
     }
 
     const handleRegister = () => {
-        const { loc, name, email, phone } = dataObj.current
+        const { loc, name, email, phone } = dataObj;
         axios.post(`http://localhost:2020/users/register/${loc}?name=${name}`, { email }, {
             headers: {
                 phone
             }
         })
             .then((res) => {
-                console.log('success', res)
+                const { acknowledged, insertedId } = res?.data;
+                if (acknowledged && insertedId) {
+                    setDataObj({ name: '', loc: "", email: '', phone: '' })
+                    alert('saved')
+                } else {
+                    alert('not saved')
+                }
             })
             .catch((res) => {
-                console.log('fail', res)
+                alert('something went wrong')
             })
             .finally(() => {
                 console.log('success/fail')
@@ -32,16 +39,16 @@ export const Register = () => {
         <div>
             <h3>Register</h3>
             <p>
-                <b>Name:</b><input id="name" onChange={handleChange} />
+                <b>Name:</b><input value={dataObj?.name} id="name" onChange={handleChange} />
             </p>
             <p>
-                <b>Phone:</b><input id='phone' onChange={handleChange} />
+                <b>Phone:</b><input value={dataObj?.phone} id='phone' onChange={handleChange} />
             </p>
             <p>
-                <b>Locaiton:</b><input id='loc' onChange={handleChange} />
+                <b>Locaiton:</b><input value={dataObj?.loc} id='loc' onChange={handleChange} />
             </p>
             <p>
-                <b>email:</b><input id="email" onChange={handleChange} />
+                <b>email:</b><input value={dataObj?.email} id="email" onChange={handleChange} />
             </p>
             <p>
                 <button onClick={handleRegister}>Register</button>
