@@ -1,8 +1,10 @@
-import React, { useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import axios from 'axios'
+import { appCtx } from './statemanagement/context'
 
-export const Register = () => {
+export const Register = ({ getUsers }) => {
     const [dataObj, setDataObj] = useState({ name: '', loc: "", email: '', phone: '' })
+    const { dispatch } = useContext(appCtx)
     const handleChange = (eve) => {
         const { id, value } = eve.target
         setDataObj({
@@ -14,6 +16,7 @@ export const Register = () => {
 
     const handleRegister = () => {
         const { loc, name, email, phone } = dataObj;
+        dispatch({ type: "LOADER", payload: true })
         axios.post(`https://stepup-server-snowy.vercel.app/users/register/${loc}?name=${name}`, { email }, {
             headers: {
                 phone
@@ -23,6 +26,7 @@ export const Register = () => {
                 const { acknowledged, insertedId } = res?.data;
                 if (acknowledged && insertedId) {
                     setDataObj({ name: '', loc: "", email: '', phone: '' })
+                    getUsers();
                     alert('saved')
                 } else {
                     alert('not saved')
@@ -32,7 +36,7 @@ export const Register = () => {
                 alert('something went wrong')
             })
             .finally(() => {
-                console.log('success/fail')
+                dispatch({ type: "LOADER", payload: false })
             })
     }
     return (
